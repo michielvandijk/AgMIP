@@ -1,0 +1,45 @@
+---
+title: "agCLIM50"
+author: "Michiel van Dijk"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_data, echo = FALSE, message = FALSE}
+library(readr)
+TOTAL <- read.csv("D:\\R\\AgMIP\\Cache\\agmip_MAGNET_2017-04-06.csv")
+```
+
+\newpage
+# Variable coverage
+```{r variable, echo = FALSE, message = FALSE}
+xtabs(~ variable + model, data = TOTAL)
+```
+
+\newpage
+# Region coverage
+```{r region, echo = FALSE, message = FALSE}
+xtabs(~ region + model, data = TOTAL)
+```
+
+\newpage
+# Item coverage
+```{r item, echo = FALSE, message = FALSE}
+xtabs(~ item + model, data = TOTAL)
+```
+
+\newpage
+# Unit coverage
+```{r unit, echo = FALSE, message = FALSE}
+xtabs(~ variable + unit, data = TOTAL)
+```
+
+\newpage
+# Scenario coverage
+```{r scenario, echo = FALSE, message = FALSE}
+xtabs(~ scenario + model, data = TOTAL)
+```
