@@ -11,11 +11,14 @@ dataSolPath <- "./4_MAGNET/Solutions"
 dataResultPath <- "./4_MAGNET/Results"  
 
 # har file to be copied and rename
-baseShock <- "FFANF_qpc_ti4_st"
+baseShock <- "SSP2_GDPexoFLC3"
 basePeriod <- "2007-2010"
 
 # Target scenarios
-scenarios<-c("ECO_qpc_ti4_st")
+scenarios<-c("SSP1a_FLC3_M", "SSP2a_FLC3", "SSP3a_FLC3_M", 
+             "SSP1a_FLC3_M_clim6", "SSP2a_FLC3_clim6", "SSP3a_FLC3_M_clim6", 
+             "SSP1a_FLC3_M_clim26_nEnP", "SSP2a_FLC3_clim26_nEnP", "SSP3a_FLC3_M_clim26_nEnP",
+             "SSP1a_FLC3_M_clim26_nEnP_noCC", "SSP2a_FLC3_clim26_nEnP_noCC", "SSP3a_FLC3_M_clim26_nEnP_noCC")
 
 # Create baseshock files: update, update_view, solution
 fileType <- c("update", "update_view", "Solution")

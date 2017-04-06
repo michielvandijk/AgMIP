@@ -227,6 +227,46 @@ constant2.f <- function(varname, basefile, var, set.names, group.var, var.growth
   return(conValue)
 }
 
+# Functions VFM, where sets in base year and growth variable are the different
+constant.3f <- function(varname, var, set.names, group.var, var.growth, set.names.growth){
+  baseValue <- var.extract2.f("BaseData_b.gdx", dataResultPath, var, set.names) %>%
+    group_by_(.dots = group.var) %>%
+    summarize(value = sum(value, na.rm=T))
+  
+  ENDW_COMM_unique <- unique(baseValue$ENDW_COMM)
+  
+  scenValueGrowth <- adply(lookup_sol[,c("gdxResultFiles", "year", "scenario")], 1, var.extract.f, dataResultPath, var.growth, set.names.growth) %>%
+    dplyr::select(-gdxResultFiles) %>%
+    arrange_(.dots = c("scenario", set.names.growth, "year")) %>%
+    group_by_(.dots = c("scenario", set.names.growth)) %>%
+    dplyr::mutate(cindex=cumprod((value/100)+1))  %>%
+    filter(ENDW_COMM %in% ENDW_COMM_unique) %>%
+    dplyr::select(-value) %>%
+    mutate(variable = varname)
+  
+  scenValueGrowth <- left_join(scenValueGrowth, baseValue) %>%
+    mutate(value=cindex*value) %>%
+    dplyr::select(-cindex)
+  
+  scen <- unique(scenValueGrowth$scenario)
+  
+  base.scenario.f <- function(scen, base, varname) {
+    base$scenario <- scen
+    base$year <- "2007"
+    base$variable <- varname
+    return(base)
+  } 
+  
+  baseValue2 <- ldply(scen, function(x,y,z) base.scenario.f(x, baseValue, varname))
+  
+  conValue <-   baseValue2 %>%
+    bind_rows(., scenValueGrowth) %>%
+    arrange_(.dots = c(group.var, "scenario", "year")) %>%
+    ungroup()
+  
+  return(conValue)
+}
+
 
 # Function for exogenous yield
 aland.f <- function(varname, var.growth, set.names.growth){
