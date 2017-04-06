@@ -6,12 +6,40 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+library(pacman)
+
+# Set root
+p_load(rprojroot)
+root <- find_root(is_rstudio_project)
+
+# Knitr settings
+p_load(knitr)
+knitr::opts_chunk$set(
+  fig.width=12, fig.height=8,
+  dpi = 300,
+  echo=FALSE, warning=FALSE, message=FALSE,
+  fig.path = file.path(root,"FigTabMap/out-"),
+  dev = "CairoPNG",
+  dev.args = list(CairoPNG = list(bg = "transparent"))
+  )
+
+
+# Pander settings
+p_load(pander)
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('digits', 2)
+panderOptions('round', 2)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
 ```
 
 ```{r load_data, echo = FALSE, message = FALSE}
 library(readr)
-TOTAL <- read.csv("D:\\R\\AgMIP\\Cache\\agmip_MAGNET_2017-04-06.csv")
+
+TOTAL <- read.csv(file.path(root, "\\Cache\\agmip_MAGNET_2017-04-06.csv"))
 ```
 
 \newpage
@@ -29,13 +57,19 @@ xtabs(~ region + model, data = TOTAL)
 \newpage
 # Item coverage
 ```{r item, echo = FALSE, message = FALSE}
-xtabs(~ item + model, data = TOTAL)
+xtabs(~ item + variable, data = TOTAL)
 ```
 
 \newpage
-# Unit coverage
-```{r unit, echo = FALSE, message = FALSE}
-xtabs(~ variable + unit, data = TOTAL)
+# item x Unit coverage
+```{r item_unit, echo = FALSE, message = FALSE}
+xtabs(~ unit + item, data = TOTAL)
+```
+
+\newpage
+# Unit x variable coverage
+```{r unit_variable, echo = FALSE, message = FALSE}
+xtabs(~ unit + variable, data = TOTAL)
 ```
 
 \newpage
