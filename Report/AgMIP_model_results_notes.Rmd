@@ -1,5 +1,5 @@
 ---
-title: "agCLIM50"
+title: "AgMiP"
 author: "Michiel van Dijk"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output: pdf_document
@@ -39,7 +39,7 @@ panderOptions('keep.trailing.zeros', TRUE)
 ```{r load_data, echo = FALSE, message = FALSE}
 library(readr)
 
-TOTAL <- read.csv(file.path(root, "\\Cache\\agmip_MAGNET_2017-04-06.csv"))
+TOTAL <- read.csv(file.path(root, "\\Cache\\agmip_MAGNET_2017-05-17.csv"))
 ```
 
 \newpage
