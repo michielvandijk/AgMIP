@@ -223,7 +223,7 @@ FOOD <- bind_rows(FOOD1, FOOD2, FOOD3, FOOD4, FOOD5) %>%
         summarize(value = sum(value, na.rm=T)) %>%
         rename(TRAD_COMM = i) %>%
         mutate(variable = "FOOD",
-               unit = "mil 2007 USD")
+               unit = "mn USD")
 
 # FEED
 # P1
@@ -315,13 +315,13 @@ FEEDsec <- bind_rows(FEED1, FEED2, FEED3, FEED4, FEED5) %>%
   summarize(value = sum(value)) %>%
   rename(TRAD_COMM = i) %>%
   mutate(variable = "FEEDsec",
-         unit = "mil 2007 USD")
+         unit = "mn USD")
 
 FEED <- FEEDsec %>%
   group_by(scenario, year, REG, TRAD_COMM) %>%
   summarize(value = sum(value)) %>%
   mutate(variable = "FEED",
-         unit = "mil 2007 USD")
+         unit = "mn USD")
 
 # OTHU
 # CONS = FOOD + FEED + OTHU
@@ -342,8 +342,74 @@ OTHU <- left_join(CONSou, FEEDou) %>%
                value = CONS-FOOD-FEED) %>%
         select(-CONS, -FOOD, -FEED) %>%
         mutate(variable = "OTHU",
-         unit = "mil 2007 USD")
+         unit = "mn USD")
 
+# FRUM
+# FNRM
+# FDRY
+# FFSH
+
+ARUM <- bind_rows(FEED1, FEED2, FEED3, FEED4, FEED5) %>%
+  group_by(scenario, year, REG, i, j) %>%
+  summarize(value = sum(value)) %>%
+  rename(TRAD_COMM = i) %>%
+  filter(j == "cattle") %>%
+  mutate(variable = "FRUM",
+         unit = "mil  USD")
+
+FRUM <- ARUM %>%
+  group_by(scenario, year, REG, TRAD_COMM) %>%
+  summarize(value = sum(value))%>%
+  mutate(variable = "FRUM",
+         unit = "mn USD")
+
+ANRM <- bind_rows(FEED1, FEED2, FEED3, FEED4, FEED5) %>%
+  group_by(scenario, year, REG, i, j) %>%
+  summarize(value = sum(value)) %>%
+  rename(TRAD_COMM = i) %>%
+  filter(j == "pigpoul") %>%
+  mutate(variable = "FNRM",
+         unit = "mn USD")
+
+FNRM <- ANRM %>%
+  group_by(scenario, year, REG, TRAD_COMM) %>%
+  summarize(value = sum(value))%>%
+  mutate(variable = "FNRM",
+         unit = "mn USD")
+
+ADRY <- bind_rows(FEED1, FEED2, FEED3, FEED4, FEED5) %>%
+  group_by(scenario, year, REG, i, j) %>%
+  summarize(value = sum(value)) %>%
+  rename(TRAD_COMM = i) %>%
+  filter(j == "milk") %>%
+  mutate(variable = "FDRY",
+         unit = "mn USD")
+
+FDRY <- ADRY %>%
+  group_by(scenario, year, REG, TRAD_COMM) %>%
+  summarize(value = sum(value))%>%
+  mutate(variable = "FDRY",
+         unit = "mn USD")
+
+
+AFSH <- bind_rows(FEED1, FEED2, FEED3, FEED4, FEED5) %>%
+  group_by(scenario, year, REG, i, j) %>%
+  summarize(value = sum(value)) %>%
+  rename(TRAD_COMM = i) %>%
+  filter(j == "fsh") %>%
+  mutate(variable = "FFSH",
+         unit = "mn USD")
+
+FFSH <- AFSH %>%
+  group_by(scenario, year, REG, TRAD_COMM) %>%
+  summarize(value = sum(value))%>%
+  mutate(variable = "FFSH",
+         unit = "mn USD")
+
+FEEDsec <-bind_rows(FNRM,FRUM,FDRY,FFSH)
+
+#write_csv(FEEDsec,"D:\\Diti\\FEEDsec.csv")
+#write_csv(FEED,"D:\\Diti\\FEED.csv")
 
 # Clean up
 rm(FEEDou, CONSou, FOODou)
