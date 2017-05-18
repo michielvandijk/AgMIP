@@ -571,7 +571,10 @@ MAGNET_tot <- left_join(MAGNET_tot, scenMAGNET2agCLIM50) %>%
   select(-scenario) %>%
   rename(scenario = scenagCLIM50)
 
-# Remove values in current values
+# Set order of Remove values in current values
+MAGNET_tot <- MAGNET_tot %>%
+  select(model, scenario, region, item, variable, year, unit, value)
+         
 xtabs(~variable + scenario, data = MAGNET_tot)
 xtabs(~item+variable, data = MAGNET_tot)
 xtabs(~item+unit, data = MAGNET_tot)

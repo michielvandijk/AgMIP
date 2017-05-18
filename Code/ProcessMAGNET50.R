@@ -558,11 +558,11 @@ MAGNET_tot$value[is.infinite(MAGNET_tot$value)] <- 0
 MAGNET_tot$variable[MAGNET_tot$variable == "YILD" & MAGNET_tot$sector %in% c("LSP", "DRY", "OAP", "RUM")] <- "LYLD"
 MAGNET_tot$variable[MAGNET_tot$variable == "YEXO" & MAGNET_tot$sector %in% c("LSP", "DRY", "OAP", "RUM")] <- "LYXO"
 
-# Change sector into item and select variables
+# Change sector into item and select variables and change order of variables
 MAGNET_tot <- MAGNET_tot %>%
   filter(variable %in% c("POPT","GDPT","XPRP","XPRX","AREA","YILD","YEXO","LYLD","LYXO","FOOD","FEED",
                                                  "OTHU","IMPO","EXPO","CALO","PROD","CONS","NETT","FRUM","FNRM","FDRY","FFSH")) %>%
-  rename(item = sector)
+  rename(item = sector) 
 
 # Rename scenarios in line with agCLIM50
 scenMAGNET2agCLIM50 <- read_csv("Mappings/scenMAGNET2agCLIM50.csv") %>%
@@ -572,7 +572,10 @@ MAGNET_tot <- left_join(MAGNET_tot, scenMAGNET2agCLIM50) %>%
   select(-scenario) %>%
   rename(scenario = scenagCLIM50)
 
-# Remove values in current values
+# Set order of Remove values in current values
+MAGNET_tot <- MAGNET_tot %>%
+  select(model, scenario, region, item, variable, year, unit, value)
+
 xtabs(~variable + scenario, data = MAGNET_tot)
 xtabs(~item+variable, data = MAGNET_tot)
 xtabs(~scenario+variable, data = MAGNET_tot)
