@@ -344,37 +344,37 @@ MAGNET1_2 <- rbind(MAGNET1, MAGNET2)
 
 MAGNET3_raw <- list()
 
-# 
-# ### YILD: Endogenous yield
-# # Need to replace LSP woth LPS defined over RMEAT and DAIRY only.
-# PRODlsp <- constant.f("PROD", "VALOUTPUT", c("TRAD_COMM","REG", "GDPSOURCE"), c("TRAD_COMM", "REG"), "qo", c("NSAV_COMM", "REG")) %>%
-#   mutate(unit = "mil 2007 USD", 
-#          REG = toupper(REG)) %>% 
-#   filter(TRAD_COMM %in% c("cattle", "milk"))
-# 
-# PRODlsp <- subtot_f(PRODlsp, c("scenario", "year", "sector", "REG", "variable", "unit"), "value", map_lsp)
-# 
-# # Regional mappings
-# PRODlsp <-bind_rows(
-#   subtot_f(PRODlsp, c("scenario", "year", "sector", "region", "variable", "unit"), "value", map_reg),
-#   subtot_f(PRODlsp, c("scenario", "year", "sector", "region", "variable", "unit"), "value", map_wld),
-#   subtot_f(PRODlsp, c("scenario", "year", "sector", "region", "variable", "unit"), "value", map_con)
-# )
+### YILD: Endogenous yield
+# Need to calculated over RMEAT and DAIRY only.
+PRODlsp <- constant.f("PROD", "VALOUTPUT", c("TRAD_COMM","REG", "GDPSOURCE"), c("TRAD_COMM", "REG"), "qo", c("NSAV_COMM", "REG")) %>%
+  mutate(unit = "mil 2007 USD",
+         REG = toupper(REG)) %>%
+  filter(TRAD_COMM %in% c("cattle", "milk"))
 
-# MAGNET3_raw[["YILD"]] <- bind_rows(
-#   filter(MAGNET1_2, variable %in% c("AREA") & 
-#            sector %in% c("AGR", "CGR", "CRP", "LSP", "DRY", "OSD", "PFB", "RIC", "RUM", "SGC", "VFN", 
-#                          "WHT", "TOT")),
-#   filter(MAGNET1_2, variable %in% c("PROD") & unit %in% c("mil 2007 USD") &
-#            sector %in% c("AGR", "CGR", "CRP", "DRY", "OSD", "PFB", "RIC", "RUM", "SGC", "VFN", 
-#                          "WHT", "TOT")),
-#   PRODlsp) %>% # Only sectors with land
-#   select(-unit) %>%
-#   group_by(scenario, region, sector, year) %>%
-#   dplyr::summarize(value = value[variable == "PROD"]/value[variable == "AREA"]) %>%
-#   mutate(variable = "YILD", value = value * 1000,
-#          unit = "USD/ha")
-# rm(PRODlsp)
+PRODlsp <- subtot_f(PRODlsp, c("scenario", "year", "sector", "REG", "variable", "unit"), "value", map_lsp)
+
+# Regional mappings
+PRODlsp <-bind_rows(
+  subtot_f(PRODlsp, c("scenario", "year", "sector", "region", "variable", "unit"), "value", map_reg),
+  subtot_f(PRODlsp, c("scenario", "year", "sector", "region", "variable", "unit"), "value", map_wld),
+  subtot_f(PRODlsp, c("scenario", "year", "sector", "region", "variable", "unit"), "value", map_con)
+)
+
+MAGNET3_raw[["YILD"]] <- bind_rows(
+  filter(MAGNET1_2, variable %in% c("AREA") &
+           sector %in% c("AGR", "CGR", "CRP", "LSP", "DRY", "OSD", "PFB", "RIC", "RUM", "SGC", "VFN",
+                         "WHT", "TOT")),
+  filter(MAGNET1_2, variable %in% c("PROD") &
+           sector %in% c("AGR", "CGR", "CRP", "DRY", "OSD", "PFB", "RIC", "RUM", "SGC", "VFN",
+                         "WHT", "TOT")),
+  PRODlsp) %>% # Only sectors with land
+  select(-unit) %>%
+  group_by(scenario, region, sector, year) %>%
+  dplyr::summarize(value = value[variable == "PROD"]/value[variable == "AREA"]) %>%
+  mutate(variable = "YILD",
+         value = value *1000, # to get USD/has as PROD is in bln and AREA in 1000ha
+         unit = "USD/ha")
+rm(PRODlsp)
 
 ### YEXO: Exogenous yield
 # Cumulative yield growth is extracted with aland2.f (2007 = 1)
@@ -420,8 +420,9 @@ YEXO_raw <-bind_rows(
 MAGNET3_raw[["YEXO"]] <- YEXO_raw %>% 
   group_by(scenario, year, sector, region, unit) %>%
   summarize(value = value[variable == "aland_w"]/value[variable == "AREA"]) %>%
-  mutate(variable = "YEXO",value = value * 1000,
-         unit = "USD/ha")
+  mutate(variable = "YEXO", 
+         value = value * 100, 
+         unit = "index (2007 = 100)")
 rm(YEXO_raw, AREA, aland)
 
 ### XPRX: Real export price 
