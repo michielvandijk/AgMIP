@@ -281,8 +281,9 @@ MAGNET2_raw[["POPT"]] <- constant2.f("POPT", "BaseData_b.gdx", "POP", c("REG"), 
 MAGNET2_raw[["GDPval"]] <- current.f("GDPval", "BaseData_b_view.gdx", "GDPSRC", lookup_upd_view, "GDPSRC", c("REG", "GDPSOURCE"), c("REG")) %>%
   mutate(value = value/1000, unit = "bn USD MER")
 
-# MAGNET2_raw[["NQT"]] <- current.f("NQT", "fsbasecalories_2007-2010_update_view.gdx",  "NQT", lookup_upd_view, "NQT", c("NUTRIENTS", "REG"), c("NUTRIENTS", "REG")) %>%
-#   rename(unit = NUTRIENTS)
+MAGNET2_raw[["NQT"]] <- current.f("NQT", "BaseData_b_view.gdx",  "NQT", lookup_upd_view, "NQT", c("NUTRIENTS", "REG"), c("NUTRIENTS", "REG")) %>%
+  rename(unit = NUTRIENTS) %>%
+  filter(unit == "CAL")
 
 
 
@@ -535,6 +536,15 @@ MAGNET3_raw[["XPRP_LAB"]] <- VFM %>%
 
 rm(VFM, GDPdef, VFMval, VFMvol)
 
+### CALORIE AVAILABILITY PER CAPITA
+MAGNET3_raw[["CALO"]] <-  MAGNET1_2 %>%
+  filter(variable %in% c("POPT", "NQT")) %>%
+  group_by(year, sector, scenario, region) %>%
+  summarize(value = value[variable == "NQT"]/value[variable == "POPT"]/365) %>%
+  mutate(unit = "kcal/cap/d",
+         variable = "CALO")
+
+
 #################
 ### MERGE ALL ###
 #################
@@ -542,9 +552,6 @@ rm(VFM, GDPdef, VFMval, VFMvol)
 MAGNET_tot <- bind_rows(MAGNET1_2, MAGNET3_raw) %>%
   mutate(model = "MAGNET",
          year = as.numeric(year))
-
-
-
 
 
 
@@ -562,7 +569,7 @@ MAGNET_tot$variable[MAGNET_tot$variable == "YILD" & MAGNET_tot$sector %in% c("LS
 MAGNET_tot$variable[MAGNET_tot$variable == "YEXO" & MAGNET_tot$sector %in% c("LSP", "DRY", "OAP", "RUM")] <- "LYXO"
 
 # Change sector into item
-MAGNET_tot <- filter(MAGNET_tot, variable %in% c("POPT","GDPT","XPRP","XPRX","AREA","YILD","YEXO","LYLD","LYXO","FOOD","FEED",
+MAGNET_tot <- filter(MAGNET_tot, variable %in% c("POPT","GDPT","XPRP","XPRX","AREA","YILD","YEXO","LYLD","LYXO","FOOD","FEED", "CALO",
                                                  "OTHU","IMPO","EXPO","CALO","PROD","CONS","NETT","FRUM","FNRM","FDRY","FFSH")) %>%
   rename(item = sector)
 

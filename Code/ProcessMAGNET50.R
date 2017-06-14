@@ -256,6 +256,10 @@ MAGNET1_raw[["VIMPval"]] <- current.f("priimpconsval", "BaseData_b.gdx", "VIPM",
   mutate(variable = "VIPM",
          unit = "mn USD")
 
+# # Nutrients per sector
+# MAGNET1_raw[["NQSECT"]] <- current.f("NQSECT", "BaseData_b_view.gdx",  "NQSECT", lookup_upd_view, "NQSECT", c("NUTRIENTS", "PRIM_AGRI", "REG"), c("NUTRIENTS", "PRIM_AGRI","REG"))  %>%
+#   rename(TRAD_COMM = PRIM_AGRI, unit = NUTRIENTS)
+
 
 ### FOOD, FEED and OTHU
 source("Code\\FOODFEED.r")
@@ -284,8 +288,10 @@ MAGNET2_raw[["POPT"]] <- constant2.f("POPT", "BaseData_b.gdx", "POP", c("REG"), 
 MAGNET2_raw[["GDPval"]] <- current.f("GDPval", "BaseData_b_view.gdx", "GDPSRC", lookup_upd_view, "GDPSRC", c("REG", "GDPSOURCE"), c("REG")) %>%
   mutate(value = value/1000, unit = "bn USD MER")
 
-# MAGNET2_raw[["NQT"]] <- current.f("NQT", "fsbasecalories_2007-2010_update_view.gdx",  "NQT", lookup_upd_view, "NQT", c("NUTRIENTS", "REG"), c("NUTRIENTS", "REG")) %>%
-#   rename(unit = NUTRIENTS)
+MAGNET2_raw[["NQT"]] <- current.f("NQT", "BaseData_b_view.gdx",  "NQT", lookup_upd_view, "NQT", c("NUTRIENTS", "REG"), c("NUTRIENTS", "REG")) %>%
+  rename(unit = NUTRIENTS) %>%
+  filter(unit == "CAL")
+
 
 
 
@@ -536,6 +542,17 @@ MAGNET3_raw[["XPRP_LAB"]] <- VFM %>%
 
 rm(VFM, GDPdef, VFMval, VFMvol)
 
+
+### CALORIE AVAILABILITY PER CAPITA
+MAGNET3_raw[["CALO"]] <-  MAGNET1_2 %>%
+  filter(variable %in% c("POPT", "NQT")) %>%
+  group_by(year, sector, scenario, region) %>%
+  summarize(value = value[variable == "NQT"]/value[variable == "POPT"]/365) %>%
+  mutate(unit = "kcal/cap/d",
+         variable = "CALO")
+
+
+
 #################
 ### MERGE ALL ###
 #################
@@ -561,7 +578,7 @@ MAGNET_tot$variable[MAGNET_tot$variable == "YEXO" & MAGNET_tot$sector %in% c("LS
 
 # Change sector into item and select variables and change order of variables
 MAGNET_tot <- MAGNET_tot %>%
-  filter(variable %in% c("POPT","GDPT","XPRP","XPRX","AREA","YILD","YEXO","LYLD","LYXO","FOOD","FEED",
+  filter(variable %in% c("POPT","GDPT","XPRP","XPRX","AREA","YILD","YEXO","LYLD","LYXO","FOOD","FEED", "CALO",
                                                  "OTHU","IMPO","EXPO","CALO","PROD","CONS","NETT","FRUM","FNRM","FDRY","FFSH")) %>%
   rename(item = sector) 
 
