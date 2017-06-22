@@ -171,9 +171,6 @@ MAGNET1_raw[["CONS"]] <- left_join(PROD, IMPO) %>%
          unit = "mn USD")
 rm(PROD, EXPO, IMPO)
 
-# Nutrients per sector
-# MAGNET1_raw[["NQSECT"]] <- current.f("NQSECT", "fsbasecalories_2007-2010_update_view.gdx",  "NQSECT", lookup_upd_view, "NQSECT", c("NUTRIENTS", "PRIM_AGRI", "REG"), c("NUTRIENTS", "PRIM_AGRI","REG"))  %>%
-#   rename(TRAD_COMM = PRIM_AGRI, unit = NUTRIENTS)
 
 # NB: in case of EXPO REGSOURCE is the exporter and REDDEST the importer.
 ### EXPO: export volume at market prices in volume
@@ -256,9 +253,10 @@ MAGNET1_raw[["VIMPval"]] <- current.f("priimpconsval", "BaseData_b.gdx", "VIPM",
   mutate(variable = "VIPM",
          unit = "mn USD")
 
-# # Nutrients per sector
-# MAGNET1_raw[["NQSECT"]] <- current.f("NQSECT", "BaseData_b_view.gdx",  "NQSECT", lookup_upd_view, "NQSECT", c("NUTRIENTS", "PRIM_AGRI", "REG"), c("NUTRIENTS", "PRIM_AGRI","REG"))  %>%
-#   rename(TRAD_COMM = PRIM_AGRI, unit = NUTRIENTS)
+# Nutrients per sector
+MAGNET1_raw[["NQSECT"]] <- current.f("NQSECT", "BaseData_b_view.gdx",  "NQSECT", lookup_upd_view, "NQSECT", c("NUTRIENTS", "PRIM_AGRI", "REG"), c("NUTRIENTS", "PRIM_AGRI","REG"))  %>%
+  rename(TRAD_COMM = PRIM_AGRI, unit = NUTRIENTS) %>%
+  filter(unit == "CAL")
 
 
 ### FOOD, FEED and OTHU
@@ -544,13 +542,21 @@ rm(VFM, GDPdef, VFMval, VFMvol)
 
 
 ### CALORIE AVAILABILITY PER CAPITA
-MAGNET3_raw[["CALO"]] <-  MAGNET1_2 %>%
-  filter(variable %in% c("POPT", "NQT")) %>%
-  group_by(year, sector, scenario, region) %>%
-  summarize(value = value[variable == "NQT"]/value[variable == "POPT"]/365) %>%
-  mutate(unit = "kcal/cap/d",
-         variable = "CALO")
+NQT <- MAGNET1_2 %>%
+  filter(variable %in% c("NQT", "NQSECT")) %>%
+  select(-unit)
 
+
+POPT <- MAGNET1_2 %>%
+  filter(variable %in% c("POPT")) %>%
+  rename(POPT = value) %>%
+  select(-variable, -sector, -unit)
+
+MAGNET3_raw[["CALO"]] <- left_join(NQT, POPT) %>%
+  mutate(value = value/(POPT*365),
+         unit = "kcal/cap/d",
+         variable = "CALO") %>%
+  select(-POPT)
 
 
 #################
