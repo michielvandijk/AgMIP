@@ -141,6 +141,7 @@ current.f <- function(varname, basefile, varbase, scenariofile, varsen, set.name
 
 # Functions for prodvol IMPO where sets in base year and growth variable are not the same
 constant.f <- function(varname, var, set.names, group.var, var.growth, set.names.growth){
+
   baseValue <- var.extract2.f("BaseData_b_view.gdx", dataResultPath, var, set.names) %>%
     group_by_(.dots = group.var) %>%
     summarize(value = sum(value, na.rm=T))
@@ -156,7 +157,7 @@ constant.f <- function(varname, var, set.names, group.var, var.growth, set.names
     dplyr::select(-value) %>%
     rename(TRAD_COMM = NSAV_COMM) %>%
     mutate(variable = varname)
-  
+
   scenValueGrowth <- left_join(scenValueGrowth, baseValue) %>%
     mutate(value=cindex*value) %>%
     dplyr::select(-cindex)

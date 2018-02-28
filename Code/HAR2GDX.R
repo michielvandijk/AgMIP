@@ -23,7 +23,7 @@ igdx(GAMSPath)
 # Make sure GDX2HAR.exe and gdxiomh.dll are located in one folder.
 
 # Set working folder
-wdPath <- "D:\\Diti\\MAGNET_PBL_SSP_PPP_NUTcor2noCCcor"
+wdPath <- "D:\\Tabeau\\Tomoko_Paper"
 setwd(wdPath)  
 
 # FUNCTIONS
@@ -50,10 +50,10 @@ dataResultPath <- "./4_MAGNET/Results"
 if (!file.exists(dataResultPath)) dir.create(dataResultPath) 
 
 # Define scenarios, periods and project
-scenarios<-c("SSP1a_FLC3_M", "SSP2a_FLC3", "SSP3a_FLC3_M", 
-             "SSP1a_FLC3_M_clim6", "SSP2a_FLC3_clim6", "SSP3a_FLC3_M_clim6", 
-             "SSP1a_FLC3_M_clim26_nEnP", "SSP2a_FLC3_clim26_nEnP", "SSP3a_FLC3_M_clim26_nEnP",
-             "SSP1a_FLC3_M_clim26_nEnP_noCC", "SSP2a_FLC3_clim26_nEnP_noCC", "SSP3a_FLC3_M_clim26_nEnP_noCC")
+#scenarios<-c("SSP1a_FLC3_M", "SSP2a_FLC3", "SSP3a_FLC3_M", 
+#             "SSP1a_FLC3_M_clim6", "SSP2a_FLC3_clim6", "SSP3a_FLC3_M_clim6", 
+#             "SSP1a_FLC3_M_clim26_nEnP", "SSP2a_FLC3_clim26_nEnP", "SSP3a_FLC3_M_clim26_nEnP",
+#             "SSP1a_FLC3_M_clim26_nEnP_noCC", "SSP2a_FLC3_clim26_nEnP_noCC", "SSP3a_FLC3_M_clim26_nEnP_noCC")
 periods<-c("2007-2010", "2010-2020", "2020-2030", "2030-2050")
 
 # Create lookup table for update files
@@ -96,8 +96,10 @@ lookup_sol$harSourceFiles <- paste(with(lookup_sol, paste(scenario, period, sour
 lookup_sol$gdxResultFiles <- paste(with(lookup_sol, paste(scenario, period, sourcefile, sep="_")), ".gdx", sep="")
 
 # Create list of base files
-BaseDataFiles <- data.frame(harSourceFiles = c("BaseData_b.har", "BaseData_b_view.har", "fsbasecalories_2007-2010_update_view.har"),
-                            gdxResultFiles = c("BaseData_b.gdx", "BaseData_b_view.gdx", "fsbasecalories_2007-2010_update_view.gdx"))
+#BaseDataFiles <- data.frame(harSourceFiles = c("BaseData_b.har", "BaseData_b_view.har", "fsbasecalories_2007-2010_update_view.har"),
+#                            gdxResultFiles = c("BaseData_b.gdx", "BaseData_b_view.gdx", "fsbasecalories_2007-2010_update_view.gdx"))
+BaseDataFiles <- data.frame(harSourceFiles = c("BaseData_b.har", "BaseData_b_view.har"),
+                            gdxResultFiles = c("BaseData_b.gdx", "BaseData_b_view.gdx"))
 
 
 # Create lookup table for slc files

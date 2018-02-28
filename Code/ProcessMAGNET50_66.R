@@ -2,8 +2,8 @@
 ##### PROCESS MAGNET VARIABLES             ############
 #######################################################
 
-dataPath <- "D:\\Diti\\RFromMichiel\\MAGNET_PBL_SSP_PPP_NUTcor2noCCcor"
-dataResultPath <- "D:\\Diti\\RFromMichiel\\MAGNET_PBL_SSP_PPP_NUTcor2noCCcor\\4_MAGNET\\Results"
+dataPath <- "D:\\WillemJanvanZeist\\MAGNET_PBL_SSP_PPP_NUTcor2noCCcor"
+dataResultPath <- "D:\\WillemJanvanZeist\\MAGNET_PBL_SSP_PPP_NUTcor2noCCcor\\4_MAGNET\\Results"
 
 ### PACKAGES
 BasePackages <- c("readr", "lazyeval", "foreign", "stringr", "car", "zoo", "tidyr", "RColorBrewer", "plyr", "dplyr", "ggplot2", "haven")
@@ -27,7 +27,7 @@ options("stringsAsFactors"=FALSE) # ensures that characterdata that is loaded (e
 options(digits=4)
 
 ### Define scenarios, periods, path, project, sourcefile and 
-scenarios <- read_csv("Mappings/scenMAGNET2agCLIM50_53_AT.csv")
+scenarios <- read_csv("Mappings/scenMAGNET2agCLIM50_66.csv")
 scenarios <- scenarios$scenMAGNET
 periods<-c("2007-2010", "2010-2020", "2020-2030", "2030-2050")
 
@@ -584,7 +584,7 @@ MAGNET_tot <- filter(MAGNET_tot, variable %in% c("POPT","GDPT","XPRP","XPRX","AR
   rename(item = sector)
 
 # Rename scenarios in line with agCLIM50
-scenMAGNET2agCLIM50 <- read_csv("Mappings/scenMAGNET2agCLIM50_53_AT.csv") %>%
+scenMAGNET2agCLIM50 <- read_csv("Mappings/scenMAGNET2agCLIM50_66.csv") %>%
   rename(scenario = scenMAGNET)
 
 MAGNET_tot <- left_join(MAGNET_tot, scenMAGNET2agCLIM50) %>%
